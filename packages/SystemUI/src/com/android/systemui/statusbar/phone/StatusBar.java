@@ -2055,27 +2055,24 @@ public class StatusBar extends SystemUI implements DemoMode,
 
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
-            /*resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.XXX),
-                    false, this, UserHandle.USER_ALL);*/
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.DOUBLE_TAP_SLEEP_GESTURE),
+                    false, this, UserHandle.USER_ALL);
         }
 
         @Override
         public void onChange(boolean selfChange, Uri uri) {
-            /*if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.XXX))) {
-                doXXX();
-            }*/
         }
 
         public void update() {
-            //doXXX();
+            setSBSleepGesture();
         }
     }
 
-    /*private void doXXX() {
-
-    }*/
+    private void setSBSleepGesture() {
+        if (mNotificationShadeWindowViewController != null)
+            mNotificationShadeWindowViewController.updateSettings();
+    }
 
     /**
      * All changes to the status bar and notifications funnel through here and are batched.
