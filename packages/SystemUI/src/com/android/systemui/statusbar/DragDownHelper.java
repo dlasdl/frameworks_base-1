@@ -84,7 +84,7 @@ public class DragDownHelper implements Gefingerpoken {
         mGoToSleep = new Runnable() {
             @Override
             public void run() {
-                tenxUtils.switchScreenOff(context);
+                ppuiUtils.switchScreenOff(context);
             }
         };
     }

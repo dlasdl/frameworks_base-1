@@ -565,7 +565,7 @@ public class NotificationPanelViewController extends PanelViewController {
         mDoubleTapGesture = new GestureDetector(mView.getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onDoubleTap(MotionEvent e) {
-                tenxUtils.switchScreenOff(mView.getContext());
+                ppuiUtils.switchScreenOff(mView.getContext());
                 // quick pulldown can trigger those values
                 // on double tap - so reset them
                 mQsExpandImmediate = false;
@@ -578,7 +578,7 @@ public class NotificationPanelViewController extends PanelViewController {
                 new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onDoubleTap(MotionEvent e) {
-                tenxUtils.switchScreenOff(mView.getContext());
+                ppuiUtils.switchScreenOff(mView.getContext());
                 return true;
             }
         });
