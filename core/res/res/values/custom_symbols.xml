@@ -92,4 +92,9 @@
     <!-- Device has OnePlus haptic motor -->
     <java-symbol type="bool" name="config_hasOnePlusHapticMotor" />
 
+     <!-- App lock -->
+   <java-symbol type="string" name="applock_prompt_title" />
+   <java-symbol type="string" name="applock_prompt_subtitle" />
+
+
 </resources>

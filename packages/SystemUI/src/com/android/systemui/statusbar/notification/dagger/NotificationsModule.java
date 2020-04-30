@@ -16,6 +16,7 @@
 
 package com.android.systemui.statusbar.notification.dagger;
 
+import android.app.AppLockManager;
 import android.app.INotificationManager;
 import android.content.Context;
 import android.content.pm.LauncherApps;
@@ -88,7 +89,8 @@ public interface NotificationsModule {
             Lazy<NotificationRemoteInputManager> notificationRemoteInputManagerLazy,
             LeakDetector leakDetector,
             Lazy<BubbleController> bubbleController,
-            ForegroundServiceDismissalFeatureController fgsFeatureController) {
+            ForegroundServiceDismissalFeatureController fgsFeatureController,
+            AppLockManager appLockManager) {
         return new NotificationEntryManager(
                 logger,
                 groupManager,
@@ -99,7 +101,8 @@ public interface NotificationsModule {
                 notificationRemoteInputManagerLazy,
                 leakDetector,
                 bubbleController,
-                fgsFeatureController);
+                fgsFeatureController,
+                appLockManager);
     }
 
     /** Provides an instance of {@link NotificationGutsManager} */

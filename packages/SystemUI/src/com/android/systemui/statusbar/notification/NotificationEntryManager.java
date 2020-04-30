@@ -23,8 +23,15 @@ import static com.android.systemui.statusbar.notification.row.NotificationRowCon
 
 import android.annotation.NonNull;
 import android.annotation.Nullable;
+import android.app.AppLockManager;
+import android.app.AppLockManager.AppLockCallback;
 import android.app.Notification;
+import android.content.Context;
+import android.database.ContentObserver;
+import android.os.Bundle;
 import android.os.SystemClock;
+import android.os.UserHandle;
+import android.provider.Settings;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.NotificationListenerService.Ranking;
 import android.service.notification.NotificationListenerService.RankingMap;
@@ -35,7 +42,9 @@ import android.util.Log;
 
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.internal.statusbar.NotificationVisibility;
+import com.android.systemui.Dependency;
 import com.android.systemui.Dumpable;
+import com.android.systemui.R;
 import com.android.systemui.bubbles.BubbleController;
 import com.android.systemui.statusbar.FeatureFlags;
 import com.android.systemui.statusbar.NotificationLifetimeExtender;
@@ -53,6 +62,7 @@ import com.android.systemui.statusbar.notification.collection.notifcollection.No
 import com.android.systemui.statusbar.notification.dagger.NotificationsModule;
 import com.android.systemui.statusbar.notification.logging.NotificationLogger;
 import com.android.systemui.statusbar.phone.NotificationGroupManager;
+import com.android.systemui.statusbar.notification.row.ExpandableNotificationRow;
 import com.android.systemui.util.Assert;
 import com.android.systemui.util.leak.LeakDetector;
 
@@ -148,6 +158,30 @@ public class NotificationEntryManager implements
             = new ArrayList<>();
     private final List<NotificationEntryListener> mNotificationEntryListeners = new ArrayList<>();
     private final List<NotificationRemoveInterceptor> mRemoveInterceptors = new ArrayList<>();
+    private final ArrayMap<String, NotificationEntry> mEntries = new ArrayMap<>();
+
+    private final AppLockManager mAppLockManager;
+    private final AppLockCallback mAppLockCallback = new AppLockCallback() {
+        @Override
+        public void onAppStateChanged(String pkg) {
+            updateAppNotifications(pkg);
+        }
+    };
+
+    private void updateAppNotifications(String pkg) {
+        ArrayList<NotificationEntry> arr = getAllNotificationsForPackage(pkg);
+        for (NotificationEntry notif : arr) {
+            if (notif.rowExists()) {
+                ExpandableNotificationRow row = notif.getRow();
+                boolean appLocked = mAppLockManager.isAppLocked(pkg);
+                row.setAppLocked(appLocked);
+                Dependency.get(Dependency.MAIN_HANDLER).post(() -> {
+                    row.onAppStateChanged(!mAppLockManager.getAppNotificationHide(pkg)
+                            || mAppLockManager.isAppOpen(pkg));
+                });
+            }
+        }
+    }
 
     @Override
     public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
@@ -205,7 +239,8 @@ public class NotificationEntryManager implements
             Lazy<NotificationRemoteInputManager> notificationRemoteInputManagerLazy,
             LeakDetector leakDetector,
             Lazy<BubbleController> bubbleController,
-            ForegroundServiceDismissalFeatureController fgsFeatureController) {
+            ForegroundServiceDismissalFeatureController fgsFeatureController,
+            AppLockManager appLockManager) {
         mLogger = logger;
         mGroupManager = groupManager;
         mRankingManager = rankingManager;
@@ -216,6 +251,8 @@ public class NotificationEntryManager implements
         mLeakDetector = leakDetector;
         mFgsFeatureController = fgsFeatureController;
         mBubbleControllerLazy = bubbleController;
+        mAppLockManager = appLockManager;
+        mAppLockManager.addAppLockCallback(mAppLockCallback);
     }
 
     /** Once called, the NEM will start processing notification events from system server. */
@@ -342,6 +379,17 @@ public class NotificationEntryManager implements
             // If there was an async task started after the removal, we don't want to add it back to
             // the list, otherwise we might get leaks.
             if (!entry.isRowRemoved()) {
+                StatusBarNotification n = entry.getSbn();
+                final String pkg = n.getPackageName();
+                boolean isAppLocked = mAppLockManager.isAppLocked(pkg);
+                if (isAppLocked && entry.rowExists()) {
+                    ExpandableNotificationRow row = entry.getRow();
+                    row.setAppLocked(isAppLocked);
+                    Dependency.get(Dependency.MAIN_HANDLER).post(() -> {
+                        row.onAppStateChanged(!mAppLockManager.getAppNotificationHide(pkg) ||
+                                mAppLockManager.isAppOpen(pkg));
+                    });
+                }
                 boolean isNew = getActiveNotificationUnfiltered(entry.getKey()) == null;
                 mLogger.logNotifInflated(entry.getKey(), isNew);
                 if (isNew) {
@@ -782,6 +830,21 @@ public class NotificationEntryManager implements
             return mPendingNotifications.get(key);
         } else {
             return mActiveNotifications.get(key);
+        }
+    }
+
+    public ArrayList<NotificationEntry> getAllNotificationsForPackage(String pkg) {
+        synchronized (mEntries) {
+            final int len = mEntries.size();
+            ArrayList<NotificationEntry> filtered = new ArrayList<>(len);
+            for (int i = 0; i < len; i++) {
+                NotificationEntry entry = mEntries.valueAt(i);
+                StatusBarNotification n = entry.getSbn();
+                if (pkg.equals(n.getPackageName())) {
+                    filtered.add(entry);
+                }
+            }
+            return filtered;
         }
     }
 

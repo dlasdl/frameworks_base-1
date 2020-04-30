@@ -151,6 +151,7 @@ import static com.android.server.wm.ActivityStack.ActivityState.STOPPING;
 import static com.android.server.wm.ActivityStack.STACK_VISIBILITY_VISIBLE;
 import static com.android.server.wm.ActivityStackSupervisor.PRESERVE_WINDOWS;
 import static com.android.server.wm.ActivityTaskManagerDebugConfig.DEBUG_APP;
+import static com.android.server.wm.ActivityTaskManagerDebugConfig.DEBUG_APPLOCK;
 import static com.android.server.wm.ActivityTaskManagerDebugConfig.DEBUG_CLEANUP;
 import static com.android.server.wm.ActivityTaskManagerDebugConfig.DEBUG_CONFIGURATION;
 import static com.android.server.wm.ActivityTaskManagerDebugConfig.DEBUG_CONTAINERS;
@@ -165,6 +166,7 @@ import static com.android.server.wm.ActivityTaskManagerDebugConfig.DEBUG_USER_LE
 import static com.android.server.wm.ActivityTaskManagerDebugConfig.DEBUG_VISIBILITY;
 import static com.android.server.wm.ActivityTaskManagerDebugConfig.POSTFIX_ADD_REMOVE;
 import static com.android.server.wm.ActivityTaskManagerDebugConfig.POSTFIX_APP;
+import static com.android.server.wm.ActivityTaskManagerDebugConfig.POSTFIX_APPLOCK;
 import static com.android.server.wm.ActivityTaskManagerDebugConfig.POSTFIX_CONFIGURATION;
 import static com.android.server.wm.ActivityTaskManagerDebugConfig.POSTFIX_CONTAINERS;
 import static com.android.server.wm.ActivityTaskManagerDebugConfig.POSTFIX_FOCUS;
@@ -353,6 +355,7 @@ final class ActivityRecord extends WindowToken implements WindowManagerService.A
     private static final String TAG_TRANSITION = TAG + POSTFIX_TRANSITION;
     private static final String TAG_USER_LEAVING = TAG + POSTFIX_USER_LEAVING;
     private static final String TAG_VISIBILITY = TAG + POSTFIX_VISIBILITY;
+    private static final String TAG_APPLOCK = TAG + POSTFIX_APPLOCK;
 
     private static final String ATTR_ID = "id";
     private static final String TAG_INTENT = "intent";
@@ -428,6 +431,7 @@ final class ActivityRecord extends WindowToken implements WindowManagerService.A
     final String processName; // process where this component wants to run
     final String taskAffinity; // as per ActivityInfo.taskAffinity
     final boolean stateNotNeeded; // As per ActivityInfo.flags
+    boolean isAppLocked;
     @VisibleForTesting
     int mHandoverLaunchDisplayId = INVALID_DISPLAY; // Handover launch display id to next activity.
     @VisibleForTesting
@@ -441,6 +445,7 @@ final class ActivityRecord extends WindowToken implements WindowManagerService.A
     private int logo;               // resource identifier of activity's logo.
     private int theme;              // resource identifier of activity's theme.
     private int windowFlags;        // custom window flags for preview window.
+    private int mResizeMode = -1;
     private Task task;              // the task this is in.
     private long createTime = System.currentTimeMillis();
     long lastVisibleTime;         // last time this activity became visible
@@ -1628,6 +1633,7 @@ final class ActivityRecord extends WindowToken implements WindowManagerService.A
         }
 
         launchMode = aInfo.launchMode;
+        isAppLocked = mAtmService.isAppLocked(packageName);
 
         setActivityType(_componentSpecified, _launchedFromUid, _intent, options, sourceRecord);
 
@@ -2051,6 +2057,16 @@ final class ActivityRecord extends WindowToken implements WindowManagerService.A
         return sourceRecord != null && sourceRecord.isResolverOrDelegateActivity();
     }
 
+    boolean getIsAppLocked() {
+        isAppLocked = mAtmService.isAppLocked(packageName);
+        if (isAppLocked) {
+            info.resizeMode = RESIZE_MODE_UNRESIZEABLE;
+        } else {
+            info.resizeMode = mResizeMode;
+        }
+        return isAppLocked;
+    }
+
     /**
      * @return whether the given package name can launch an assist activity.
      */
@@ -2111,6 +2127,12 @@ final class ActivityRecord extends WindowToken implements WindowManagerService.A
                 && canLaunchDreamActivity(launchedFromPackage)
                 && DreamActivity.class.getName() == info.name) {
             activityType = ACTIVITY_TYPE_DREAM;
+        }
+        if (mResizeMode == -1){
+            mResizeMode = info.resizeMode;
+        }
+        if (getIsAppLocked()) {
+            info.resizeMode = RESIZE_MODE_UNRESIZEABLE;
         }
         setActivityType(activityType);
     }
@@ -4366,7 +4388,7 @@ final class ActivityRecord extends WindowToken implements WindowManagerService.A
      */
     boolean shouldUseAppThemeSnapshot() {
         return mDisablePreviewScreenshots || forAllWindows(WindowState::isSecureLocked,
-                true /* topToBottom */);
+                true /* topToBottom */) || getIsAppLocked();
     }
 
     /**
