@@ -17,6 +17,19 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := frameworks-base-overlays
 LOCAL_REQUIRED_MODULES := \
+	AccentColorMintOverlay \
+        AccentColorAmberOverlay \
+        AccentColorCandyRedOverlay \
+        AccentColorDdayGreenOverlay \
+        AccentColorFrenchBleuOverlay \
+        AccentColorHeirloomBleuOverlay \
+        AccentColorHolillusionOverlay \
+        AccentColorIllusionsPurpleOverlay \
+        AccentColorObfusBleuOverlay \
+        AccentColorOnePlusRedOverlay \
+        AccentColorSeasideMintOverlay \
+        AccentColorWarmthOrangeOverlay \
+        AccentColorPurpleOverlay \
 	AccentColorMIUIOverlay \
         AccentColorXiaomiOrangeOverlay \
 	AccentColorPornhubOverlay \
