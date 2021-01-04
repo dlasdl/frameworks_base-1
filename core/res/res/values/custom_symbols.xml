@@ -47,4 +47,6 @@
     <!-- Screen recorder framerate limit -->
     <java-symbol type="integer" name="config_screenRecorderMaxFramerate" />
 
+   <!-- Smart charging battery percentage -->
+   <java-symbol type="integer" name="config_smartChargingBatteryLevel" />
 </resources>
