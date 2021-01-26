@@ -61,8 +61,7 @@
                 android:minWidth="@dimen/volume_dialog_panel_width"
                 android:paddingRight="@dimen/volume_dialog_rows_padding_right"
                 android:gravity="center"
-                android:orientation="horizontal"
-                android:animateLayoutChanges="true">
+                android:orientation="horizontal">
                     <!-- volume rows added and removed here! :-) -->
             </LinearLayout>
         </LinearLayout>
