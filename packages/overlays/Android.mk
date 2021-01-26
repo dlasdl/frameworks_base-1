@@ -17,49 +17,9 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := frameworks-base-overlays
 LOCAL_REQUIRED_MODULES := \
-	AccentColorCoralOverlay \
-	AccentColorFerrariRedOverlay \
-	AccentColorMintOverlay \
-        AccentColorAmberOverlay \
-        AccentColorCandyRedOverlay \
-        AccentColorDdayGreenOverlay \
-        AccentColorFrenchBleuOverlay \
-        AccentColorHeirloomBleuOverlay \
-        AccentColorHolillusionOverlay \
-        AccentColorIllusionsPurpleOverlay \
-        AccentColorObfusBleuOverlay \
-        AccentColorOnePlusRedOverlay \
-        AccentColorSeasideMintOverlay \
-        AccentColorWarmthOrangeOverlay \
-        AccentColorPurpleOverlay \
-	AccentColorMIUIOverlay \
-        AccentColorXiaomiOrangeOverlay \
-	AccentColorPornhubOverlay \
-	AccentColorTealOverlay \
-	AccentColorRedOverlay \
-	AccentColorQGreenOverlay \
-	AccentColorPinkOverlay \
-	AccentColorLightPurpleOverlay \
-	AccentColorIndigoOverlay \
-	AccentColorFlatPinkOverlay \
-	AccentColorCyanOverlay \
-	AccentColorBlueGrayOverlay \
-	AccentColorBlackOverlay \
-	AccentColorCinnamonOverlay \
-	AccentColorOceanOverlay \
-	AccentColorOrchidOverlay \
-	AccentColorSpaceOverlay \
-	AccentColorGreenOverlay \
-	AccentColorPurpleOverlay \
-	AccentColorPaletteOverlay \
-	AccentColorCarbonOverlay \
-	AccentColorSandOverlay \
-	AccentColorAmethystOverlay \
-	AccentColorAquamarineOverlay \
-	AccentColorTangerineOverlay \
 	DisplayCutoutEmulationCornerOverlay \
 	DisplayCutoutEmulationDoubleOverlay \
-    DisplayCutoutEmulationHoleOverlay \
+        DisplayCutoutEmulationHoleOverlay \
 	DisplayCutoutEmulationTallOverlay \
 	DisplayCutoutEmulationWaterfallOverlay \
         AccentColoriOSBlueOverlay \
