@@ -2315,7 +2315,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private void readConfigurationDependentBehaviors() {
         final Resources res = mContext.getResources();
 
-    private void updateKeyAssignments() {
+     }
+
+       private void updateKeyAssignments() {
         int activeHardwareKeys = mDeviceHardwareKeys;
 
         if (mHasNavigationBar) {
@@ -2339,9 +2341,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                (hasMenu && !hasAssist)) {
             mMenuLongPressAction = Action.SEARCH;
         }
-        mAssistPressAction = Action.SEARCH;
-        mAssistLongPressAction = Action.VOICE_SEARCH;
-        mAppSwitchPressAction = Action.APP_SWITCH;
+        mAssistPressAction = Action.fromIntSafe(res.getInteger(
+                com.android.internal.R.integer.config_pressOnAssistBehavior));
+        mAssistLongPressAction = Action.fromIntSafe(res.getInteger(
+                com.android.internal.R.integer.config_longPressOnAssistBehavior));
+        mAppSwitchPressAction = Action.fromIntSafe(res.getInteger(
+                com.android.internal.R.integer.config_pressOnAppSwitchBehavior));
         mAppSwitchLongPressAction = Action.fromIntSafe(res.getInteger(
                 com.android.internal.R.integer.config_longPressOnAppSwitchBehavior));
 
