@@ -4836,12 +4836,6 @@ public final class Settings {
         public static final String FORCE_FULLSCREEN_CUTOUT_APPS = "force_full_screen_cutout_apps";
 
         /**
-        * Whether to show media player in QS
-        * @hide
-        */
-        public static final String QS_MEDIA_PLAYER = "qs_media_player";
-
-        /**
          * Use doubletap as doze pulse triggers
          * @hide
          */
