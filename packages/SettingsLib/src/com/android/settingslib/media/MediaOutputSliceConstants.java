@@ -64,4 +64,10 @@ public class MediaOutputSliceConstants {
      */
     public static final String EXTRA_PACKAGE_NAME =
             "com.android.settings.panel.extra.PACKAGE_NAME";
+
+    /**
+     * An intent action to launch Bluetooth setting
+     */
+    public static final String ACTION_LAUNCH_BLUETOOTH_SETTINGS = "android.settings.BLUETOOTH_SETTINGS";
+
 }
