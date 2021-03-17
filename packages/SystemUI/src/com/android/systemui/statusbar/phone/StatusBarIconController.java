@@ -341,6 +341,8 @@ public interface StatusBarIconController {
         private NetworkTrafficSB onCreateNetworkTraffic(String slot) {
             NetworkTrafficSB view = new NetworkTrafficSB(mContext);
             view.setPadding(3, 0, 3, 0);
+	    return view;
+        }
 
         private StatusBarImsView onCreateStatusBarImsView(String slot) {
             StatusBarImsView view = StatusBarImsView.fromContext(mContext, slot);
