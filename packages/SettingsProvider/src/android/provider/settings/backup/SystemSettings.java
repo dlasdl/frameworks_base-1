@@ -86,9 +86,6 @@ public class SystemSettings {
         Settings.System.NOTIFICATION_LIGHT_PULSE,
         Settings.System.DOUBLE_TAP_SLEEP_GESTURE,
         Settings.System.DOUBLE_TAP_SLEEP_LOCKSCREEN,
-        Settings.System.VIBRATE_ON_CONNECT,
-        Settings.System.VIBRATE_ON_CALLWAITING,
-        Settings.System.VIBRATE_ON_DISCONNECT,
         Settings.System.QS_MEDIA_PLAYER,
     };
 }
